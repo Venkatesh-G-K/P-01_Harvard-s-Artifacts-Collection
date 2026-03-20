@@ -11,12 +11,12 @@ API_KEY = "99f759b9-4e2f-46d1-9d55-92978f007201"
 
 url = "https://api.harvardartmuseums.org/object"
 
-from sqlalchemy import create_engine
+# ✅ FIXED ENGINE STRING
 
 engine = create_engine(
     "mysql+mysqlconnector://"
     "3fCAZkkCNgfMxEa.root:"
-    "h8F1E28rdnGOgobd"
+    "h8F1E28rdnGOgobd@"
     "gateway01.ap-southeast-1.prod.aws.tidbcloud.com:"
     "4000/"
     "P1_Harvard_Artifacts"
@@ -29,8 +29,6 @@ engine = create_engine(
 st.title("🏛️ Harvard Artifacts Collection Explorer")
 
 st.write("""
-This app allows you to:
-
 ✔ Collect artifact data  
 ✔ Store into SQL  
 ✔ Run SQL Queries  
@@ -92,7 +90,6 @@ def create_dataframes(all_records):
 
     for item in all_records:
 
-        # Metadata
         metadata_rows.append({
             "id": item.get("id"),
             "title": item.get("title"),
@@ -108,7 +105,6 @@ def create_dataframes(all_records):
             "accessionmethod": item.get("accessionmethod")
         })
 
-        # Media
         media_rows.append({
             "objectid": item.get("objectid"),
             "imagecount": item.get("imagecount"),
@@ -119,7 +115,6 @@ def create_dataframes(all_records):
             "dateend": item.get("dateend")
         })
 
-        # Colors
         colors = item.get("colors")
 
         if colors:
@@ -178,24 +173,26 @@ if st.button("💾 Insert into SQL"):
             st.session_state["records"]
         )
 
+        # ✅ Use append (not replace)
+
         metadata_df.to_sql(
             "artifact_metadata",
             engine,
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
 
         media_df.to_sql(
             "artifact_media",
             engine,
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
 
         colors_df.to_sql(
             "artifact_colors",
             engine,
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
 
