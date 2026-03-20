@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 # CONFIG
 # ==============================
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "99f759b9-4e2f-46d1-9d55-92978f007201"
 
 url = "https://api.harvardartmuseums.org/object"
 
