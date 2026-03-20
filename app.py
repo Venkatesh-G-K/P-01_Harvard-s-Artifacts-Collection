@@ -12,7 +12,7 @@ API_KEY = "99f759b9-4e2f-46d1-9d55-92978f007201"
 url = "https://api.harvardartmuseums.org/object"
 
 engine = create_engine(
-    "mysql+mysqlconnector://USER:PASSWORD@HOST:PORT/P1_Harvard_Artifacts"
+    "mysql+mysqlconnector://USERNAME:PASSWORD@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/P1_Harvard_Artifacts"
 )
 
 # ==============================
