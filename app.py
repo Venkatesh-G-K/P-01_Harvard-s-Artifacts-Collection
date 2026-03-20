@@ -16,7 +16,7 @@ from sqlalchemy import create_engine
 engine = create_engine(
     "mysql+mysqlconnector://"
     "3fCAZkkCNgfMxEa.root:"
-    "YOUR_PASSWORD@"
+    "h8F1E28rdnGOgobd"
     "gateway01.ap-southeast-1.prod.aws.tidbcloud.com:"
     "4000/"
     "P1_Harvard_Artifacts"
