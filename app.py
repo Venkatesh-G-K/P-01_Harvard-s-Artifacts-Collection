@@ -23,6 +23,28 @@ engine = create_engine(
 )
 
 # ==============================
+# PAGE TITLE & STYLING (INSERT HERE)
+# ==============================
+
+st.set_page_config(page_title="Harvard Artifacts Explorer", layout="wide")
+
+# 🎨 INSERT BACKGROUND STYLING HERE
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #0f172a; 
+        color: #f8fafc; 
+    }
+    h1, h2, h3 {
+        color: #e2e8f0 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ==============================
 # PAGE TITLE
 # ==============================
 
