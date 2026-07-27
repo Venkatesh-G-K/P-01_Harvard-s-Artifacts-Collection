@@ -210,36 +210,170 @@ if st.button("💾 Insert into SQL"):
 st.subheader("🔍 SQL Query Explorer")
 
 queries = {
+    # ==============================
+    # 🏛️ artifact_metadata Queries (1-5)
+    # ==============================
+    "1. Artifacts from 11th Century & Byzantine Culture": """
+        SELECT id, title, culture, century 
+        FROM artifact_metadata 
+        WHERE century = '11th century' AND culture = 'Byzantine';
+    """,
+    "2. Unique Cultures Represented": """
+        SELECT DISTINCT culture 
+        FROM artifact_metadata 
+        WHERE culture IS NOT NULL;
+    """,
+    "3. Artifacts from the Archaic Period": """
+        SELECT id, title, period, classification 
+        FROM artifact_metadata 
+        WHERE period = 'Archaic';
+    """,
+    "4. Artifacts Ordered by Accession Year (DESC)": """
+        SELECT title, accessionyear, classification 
+        FROM artifact_metadata 
+        WHERE accessionyear IS NOT NULL 
+        ORDER BY accessionyear DESC;
+    """,
+    "5. Artifact Count per Department": """
+        SELECT department, COUNT(*) AS total_artifacts 
+        FROM artifact_metadata 
+        GROUP BY department 
+        ORDER BY total_artifacts DESC;
+    """,
 
-"Unique Cultures":
-"""
-SELECT DISTINCT culture
-FROM artifact_metadata;
-""",
+    # ==============================
+    # 🖼️ artifact_media Queries (6-10)
+    # ==============================
+    "6. Artifacts with More than 1 Image": """
+        SELECT objectid, imagecount 
+        FROM artifact_media 
+        WHERE imagecount > 1;
+    """,
+    "7. Average Rank of All Artifacts": """
+        SELECT AVG(rank) AS average_rank 
+        FROM artifact_media;
+    """,
+    "8. Artifacts with Higher Colorcount than Mediacount": """
+        SELECT objectid, colorcount, mediacount 
+        FROM artifact_media 
+        WHERE colorcount > mediacount;
+    """,
+    "9. Artifacts Created Between 1500 and 1600": """
+        SELECT objectid, datebegin, dateend 
+        FROM artifact_media 
+        WHERE datebegin >= 1500 AND dateend <= 1600;
+    """,
+    "10. Artifacts with No Media Files": """
+        SELECT COUNT(*) AS artifacts_with_no_media 
+        FROM artifact_media 
+        WHERE mediacount = 0 OR mediacount IS NULL;
+    """,
 
-"Artifacts per Department":
-"""
-SELECT department, COUNT(*)
-FROM artifact_metadata
-GROUP BY department;
-""",
+    # ==============================
+    # 🎨 artifact_colors Queries (11-15)
+    # ==============================
+    "11. Distinct Hues Used in Dataset": """
+        SELECT DISTINCT hue 
+        FROM artifact_colors 
+        WHERE hue IS NOT NULL;
+    """,
+    "12. Top 5 Most Used Colors by Frequency": """
+        SELECT color, COUNT(*) AS frequency 
+        FROM artifact_colors 
+        GROUP BY color 
+        ORDER BY frequency DESC 
+        LIMIT 5;
+    """,
+    "13. Average Coverage Percentage for Each Hue": """
+        SELECT hue, AVG(percent) AS avg_coverage_percentage 
+        FROM artifact_colors 
+        WHERE hue IS NOT NULL 
+        GROUP BY hue 
+        ORDER BY avg_coverage_percentage DESC;
+    """,
+    "14. List All Colors for a Specific Artifact ID": """
+        SELECT objectid, color, hue, percent 
+        FROM artifact_colors 
+        WHERE objectid = (SELECT MIN(objectid) FROM artifact_colors);
+    """,
+    "15. Total Number of Color Entries": """
+        SELECT COUNT(*) AS total_color_entries 
+        FROM artifact_colors;
+    """,
 
-"Top 5 Colors":
-"""
-SELECT color, COUNT(*) AS frequency
-FROM artifact_colors
-GROUP BY color
-ORDER BY frequency DESC
-LIMIT 5;
-""",
+    # ==============================
+    # 🔗 Join-Based Queries (16-20)
+    # ==============================
+    "16. Titles & Hues for Byzantine Culture": """
+        SELECT m.title, c.hue 
+        FROM artifact_metadata m 
+        JOIN artifact_colors c ON m.id = c.objectid 
+        WHERE m.culture = 'Byzantine';
+    """,
+    "17. Artifact Title with Associated Hues": """
+        SELECT m.title, c.hue, c.color 
+        FROM artifact_metadata m 
+        JOIN artifact_colors c ON m.id = c.objectid;
+    """,
+    "18. Titles, Cultures, & Ranks (Period Not Null)": """
+        SELECT m.title, m.culture, me.rank, m.period 
+        FROM artifact_metadata m 
+        JOIN artifact_media me ON m.id = me.objectid 
+        WHERE m.period IS NOT NULL;
+    """,
+    "19. Top 10 Ranked Artifacts Including 'Grey' Hue": """
+        SELECT DISTINCT m.title, me.rank, c.hue 
+        FROM artifact_metadata m 
+        JOIN artifact_media me ON m.id = me.objectid 
+        JOIN artifact_colors c ON m.id = c.objectid 
+        WHERE c.hue = 'Grey' AND me.rank <= 10;
+    """,
+    "20. Artifact Count & Avg Media Count per Classification": """
+        SELECT m.classification, COUNT(m.id) AS total_artifacts, AVG(me.mediacount) AS avg_media_count 
+        FROM artifact_metadata m 
+        LEFT JOIN artifact_media me ON m.id = me.objectid 
+        GROUP BY m.classification;
+    """,
 
-"Artifacts with Multiple Images":
-"""
-SELECT *
-FROM artifact_media
-WHERE imagecount > 1;
-"""
-
+    # ==============================
+    # 🚀 Custom / Additional Insights Queries (21-25)
+    # ==============================
+    "21. Custom: Most Common Accession Methods": """
+        SELECT accessionmethod, COUNT(*) AS total 
+        FROM artifact_metadata 
+        WHERE accessionmethod IS NOT NULL 
+        GROUP BY accessionmethod 
+        ORDER BY total DESC;
+    """,
+    "22. Custom: Artifacts with Maximum Images": """
+        SELECT m.title, me.imagecount 
+        FROM artifact_metadata m 
+        JOIN artifact_media me ON m.id = me.objectid 
+        ORDER BY me.imagecount DESC 
+        LIMIT 10;
+    """,
+    "23. Custom: Dominant Hues Distribution Across Dataset": """
+        SELECT hue, COUNT(*) AS hue_count 
+        FROM artifact_colors 
+        WHERE hue IS NOT NULL 
+        GROUP BY hue 
+        ORDER BY hue_count DESC;
+    """,
+    "24. Custom: Century-wise Breakdown of Artifact Collections": """
+        SELECT century, COUNT(*) AS artifact_count 
+        FROM artifact_metadata 
+        WHERE century IS NOT NULL 
+        GROUP BY century 
+        ORDER BY artifact_count DESC;
+    """,
+    "25. Custom: Artifacts with Highest Color Diversity (Color Count)": """
+        SELECT m.title, me.colorcount 
+        FROM artifact_metadata m 
+        JOIN artifact_media me ON m.id = me.objectid 
+        WHERE me.colorcount IS NOT NULL 
+        ORDER BY me.colorcount DESC 
+        LIMIT 10;
+    """
 }
 
 selected_query = st.selectbox(
